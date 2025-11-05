@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, Search, Calendar, MessageCircle, FileText, Plus, Settings, LogOut, BookOpen, Clock, UserPlus, Filter, X, ChevronRight } from "lucide-react";
+import { Users, Search, Calendar, MessageCircle, FileText, Plus, Settings, LogOut, BookOpen, Clock, UserPlus, Filter, X, ChevronRight, User, Mail, Building2, GraduationCap, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 
-type Page = "login" | "register" | "dashboard" | "discovery" | "groupDetail";
+type Page = "login" | "register" | "dashboard" | "discovery" | "groupDetail" | "profile";
 type RSVPStatus = "attending" | "maybe" | "cant-go" | null;
 
 interface Group {
@@ -44,7 +44,23 @@ const StudyCircle = () => {
   const [registerName, setRegisterName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
+  const [registerUniversity, setRegisterUniversity] = useState("");
+  const [registerDepartment, setRegisterDepartment] = useState("");
+  const [registerSemester, setRegisterSemester] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  
+  // User profile data (mock - would come from backend)
+  const userProfile = {
+    name: registerName || "John Doe",
+    email: registerEmail || "john.doe@university.edu",
+    university: registerUniversity || "University of Technology",
+    department: registerDepartment || "Computer Science",
+    semester: registerSemester || "Fall 2025 - Year 3",
+    avatar: "JD",
+    joinedDate: "September 2023",
+    groupsJoined: 2,
+    sessionsAttended: 15,
+  };
 
   // Mock data
   const myGroups: Group[] = [
@@ -297,16 +313,23 @@ const StudyCircle = () => {
                 </form>
               </DialogContent>
             </Dialog>
-            <div className="relative group">
+              <div className="relative group">
               <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10 rounded-full">
                 <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-semibold text-sm">
-                  JD
+                  {userProfile.avatar}
                 </div>
               </Button>
               <div className="absolute right-0 mt-2 w-48 bg-card rounded-lg shadow-lg border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <button
+                  onClick={() => setCurrentPage("profile")}
+                  className="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-muted rounded-t-lg flex items-center gap-2 transition-colors"
+                >
+                  <User className="h-4 w-4" />
+                  My Profile
+                </button>
+                <button
                   onClick={handleLogout}
-                  className="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-muted rounded-lg flex items-center gap-2 transition-colors"
+                  className="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-muted rounded-b-lg flex items-center gap-2 transition-colors border-t border-border"
                 >
                   <LogOut className="h-4 w-4" />
                   Logout
@@ -380,8 +403,8 @@ const StudyCircle = () => {
   );
 
   const RegisterPage = () => (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-xl border-border">
+    <div className="min-h-screen flex items-center justify-center p-4 py-12">
+      <Card className="w-full max-w-xl shadow-xl border-border">
         <CardHeader className="text-center space-y-2 pb-6">
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
@@ -396,7 +419,7 @@ const StudyCircle = () => {
         <CardContent>
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="reg-name" className="text-foreground font-medium">Full Name</Label>
+              <Label htmlFor="reg-name" className="text-foreground font-medium">Full Name *</Label>
               <Input
                 id="reg-name"
                 type="text"
@@ -408,7 +431,7 @@ const StudyCircle = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="reg-email" className="text-foreground font-medium">Email</Label>
+              <Label htmlFor="reg-email" className="text-foreground font-medium">Email *</Label>
               <Input
                 id="reg-email"
                 type="email"
@@ -420,7 +443,49 @@ const StudyCircle = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="reg-password" className="text-foreground font-medium">Password</Label>
+              <Label htmlFor="reg-university" className="text-foreground font-medium">University *</Label>
+              <Input
+                id="reg-university"
+                type="text"
+                placeholder="e.g., University of Technology"
+                value={registerUniversity}
+                onChange={(e) => setRegisterUniversity(e.target.value)}
+                className="bg-background"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reg-department" className="text-foreground font-medium">Department *</Label>
+              <Input
+                id="reg-department"
+                type="text"
+                placeholder="e.g., Computer Science"
+                value={registerDepartment}
+                onChange={(e) => setRegisterDepartment(e.target.value)}
+                className="bg-background"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reg-semester" className="text-foreground font-medium">Current Semester/Year *</Label>
+              <Select value={registerSemester} onValueChange={setRegisterSemester} required>
+                <SelectTrigger id="reg-semester" className="bg-background">
+                  <SelectValue placeholder="Select your current semester" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Fall 2025 - Year 1">Fall 2025 - Year 1</SelectItem>
+                  <SelectItem value="Fall 2025 - Year 2">Fall 2025 - Year 2</SelectItem>
+                  <SelectItem value="Fall 2025 - Year 3">Fall 2025 - Year 3</SelectItem>
+                  <SelectItem value="Fall 2025 - Year 4">Fall 2025 - Year 4</SelectItem>
+                  <SelectItem value="Spring 2026 - Year 1">Spring 2026 - Year 1</SelectItem>
+                  <SelectItem value="Spring 2026 - Year 2">Spring 2026 - Year 2</SelectItem>
+                  <SelectItem value="Spring 2026 - Year 3">Spring 2026 - Year 3</SelectItem>
+                  <SelectItem value="Spring 2026 - Year 4">Spring 2026 - Year 4</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reg-password" className="text-foreground font-medium">Password *</Label>
               <Input
                 id="reg-password"
                 type="password"
@@ -739,6 +804,142 @@ const StudyCircle = () => {
     );
   };
 
+  const ProfilePage = () => (
+    <>
+      <Navbar />
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-foreground mb-2">My Profile</h1>
+          <p className="text-lg text-muted-foreground">Manage your account information</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Profile Card */}
+          <Card className="lg:col-span-1 shadow-lg border-border">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="relative group cursor-pointer">
+                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-4xl shadow-lg">
+                    {userProfile.avatar}
+                  </div>
+                  <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Camera className="h-8 w-8 text-white" />
+                  </div>
+                </div>
+                <div className="space-y-1 w-full">
+                  <h2 className="text-2xl font-bold text-foreground">{userProfile.name}</h2>
+                  <p className="text-sm text-muted-foreground">{userProfile.email}</p>
+                </div>
+                <div className="w-full pt-4 space-y-3 border-t border-border">
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-sm text-muted-foreground">Member Since</span>
+                    <span className="text-sm font-semibold text-foreground">{userProfile.joinedDate}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-sm text-muted-foreground">Groups Joined</span>
+                    <Badge variant="secondary" className="font-semibold">{userProfile.groupsJoined}</Badge>
+                  </div>
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-sm text-muted-foreground">Sessions Attended</span>
+                    <Badge variant="secondary" className="font-semibold">{userProfile.sessionsAttended}</Badge>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Profile Information */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="shadow-lg border-border">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <User className="h-6 w-6 text-accent" />
+                  Personal Information
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Your account details and academic information
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Full Name
+                    </Label>
+                    <Input value={userProfile.name} className="bg-background font-medium" readOnly />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      Email Address
+                    </Label>
+                    <Input value={userProfile.email} className="bg-background font-medium" readOnly />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <Building2 className="h-4 w-4" />
+                      University
+                    </Label>
+                    <Input value={userProfile.university} className="bg-background font-medium" readOnly />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <GraduationCap className="h-4 w-4" />
+                      Department
+                    </Label>
+                    <Input value={userProfile.department} className="bg-background font-medium" readOnly />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      Current Semester/Year
+                    </Label>
+                    <Input value={userProfile.semester} className="bg-background font-medium" readOnly />
+                  </div>
+                </div>
+                <div className="pt-4">
+                  <Button className="w-full md:w-auto bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 text-primary-foreground font-semibold shadow-md">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-lg border-border">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <Users className="h-6 w-6 text-accent" />
+                  Activity Overview
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Your study circle participation
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
+                    <div className="text-3xl font-bold text-primary mb-1">{userProfile.groupsJoined}</div>
+                    <div className="text-sm text-muted-foreground">Groups Joined</div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
+                    <div className="text-3xl font-bold text-accent mb-1">{userProfile.sessionsAttended}</div>
+                    <div className="text-sm text-muted-foreground">Sessions Attended</div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
+                    <div className="text-3xl font-bold text-indigo-500 mb-1">4.8</div>
+                    <div className="text-sm text-muted-foreground">Avg. Rating</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       {currentPage === "login" && <LoginPage />}
@@ -746,6 +947,7 @@ const StudyCircle = () => {
       {currentPage === "dashboard" && <DashboardPage />}
       {currentPage === "discovery" && <DiscoveryPage />}
       {currentPage === "groupDetail" && <GroupDetailPage />}
+      {currentPage === "profile" && <ProfilePage />}
     </div>
   );
 };
